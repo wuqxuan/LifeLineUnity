@@ -8,7 +8,7 @@ public class ChatObjectRight
     public void Say(View view, string message)
     {
         // 弹出新对话
-        view.PopBubble(view.m_rightBubblePrefab, -view.m_leftBubbleposX, message, view.m_soundManager.m_rightAudio);
+        view.PopBubble(view.m_BubblePrefab, message, view.m_soundManager.m_rightAudio);
         // 隐藏选择面板
         view.HideChoicePanel();
         view.m_isRightChatIsNull = true;
@@ -23,9 +23,8 @@ public class ChatObjectRight
         }
         else
         {
-            Debug.LogError("选择项不为2");
+            Debug.LogError("选择项数量不为2");
         }
-
     }
 }
 
@@ -33,7 +32,6 @@ public class ChatObjectLeft {
     /// <summary> 左侧对话，有等待时间 </summary>
     public void Say(ChatManager cm, string message)
     {
-        // Chat.CreatLeftChat(cm, message);
         cm.m_leftChats.Enqueue(message);
     }
 }

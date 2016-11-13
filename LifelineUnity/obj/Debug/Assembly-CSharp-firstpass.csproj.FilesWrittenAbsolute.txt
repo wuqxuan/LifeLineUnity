@@ -42,3 +42,4 @@
 /Users/qingxuanwu/Unity/LifeLine/LifelineUnity/Temp/bin/Debug/Unity.CecilTools.dll
 /Users/qingxuanwu/Unity/LifeLine/LifelineUnity/Temp/bin/Debug/Mono.Cecil.Pdb.dll
 /Users/qingxuanwu/Unity/LifeLine/LifelineUnity/Temp/bin/Debug/Mono.Cecil.Mdb.dll
+/Users/qingxuanwu/Unity/LifeLine/LifelineUnity/Temp/bin/Debug/WP8PopUps.dll

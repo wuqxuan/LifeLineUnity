@@ -27,7 +27,7 @@ public class ChatManager : MonoBehaviour
 
     void Start()
     {
-        status_savePath = Application.persistentDataPath + "/status.json";
+        status_savePath = Application.persistentDataPath + "/status01.json";
         m_view = FindObjectOfType(typeof(View)) as View;
         LoadStoryData();
         LoadStatusData();
@@ -47,7 +47,7 @@ public class ChatManager : MonoBehaviour
                 AtScene(currentScene);     // set: status["atScene"] = null
             }
         }
-        HandleLeftChat();
+        AutoPopLeftChat();
     }
 
     void LoadStoryData()
@@ -162,7 +162,7 @@ public class ChatManager : MonoBehaviour
                     else
                     {
                         string[] newline = LineWithNoTag.Split(' ');
-                        Debug.Log("variable = " + status[newline[1].Substring(1)] + " + " + newline[3]);
+                        // Debug.Log("variable = " + status[newline[1].Substring(1)] + " + " + newline[3]);
                         // 下面两句不能写成skip_line = !(status[newline[1].Substring(1)].Equals(newline[3]))，会得到错误结果 </summary>
                         string value = status[newline[1].Substring(1)];
                         skip_line = !value.Equals(newline[3]);
@@ -173,7 +173,7 @@ public class ChatManager : MonoBehaviour
             else if (line.StartsWith("<<set")) HandleSet(line);
             else if (line.StartsWith("[[")) HandleJump(line);
             else if (line.StartsWith("<<category")) HandleChoice(line, scene);
-            else HandleRightChat(line);
+            else HandleLeftChat(line);
         }
     }
 
@@ -202,26 +202,27 @@ public class ChatManager : MonoBehaviour
     {
         JSONArray choice = choices[int.Parse(line.Substring(19, line.Length - 21))]["actions"].AsArray;
         rightChat.Choose(m_view, new Dictionary<string, Action<string>> {
+            // choiceButtonOne
             {choice[0]["choice"], message => {
-                ActionFun(choice, message, 0);
+                ActionFunction(choice, message, 0);
             }},
-
+            // choiceButtonTwo
             {choice[1]["choice"], message => {
-                ActionFun(choice, message, 1);
-            }
-            }
+                ActionFunction(choice, message, 1);
+            }}
          });
     }
 
-    void ActionFun(JSONArray choice, string message, int index)
+    void ActionFunction(JSONArray choice, string message, int index)
     {
+        string newScence = choice[index]["identifier"];
         rightChat.Say(m_view, message);
-        status["atScene"] = choice[index]["identifier"];
+        status["atScene"] = newScence;
+        SaveStatusData(newScence);
         // SaveStatusData(scene);
-        SaveStatusData(choice[index]["identifier"]);
     }
 
-    void HandleRightChat(string line)
+    void HandleLeftChat(string line)
     {
         if (line.Contains("$pills") || line.Contains("$glowrods") || line.Contains("$power"))
         {
@@ -233,7 +234,7 @@ public class ChatManager : MonoBehaviour
     }
 
     /// <summary> 弹出左侧对话 </summary>
-    private void HandleLeftChat()
+    private void AutoPopLeftChat()
     {
         // 左侧有对话
         if (m_leftChats.Count > 0)
@@ -246,7 +247,7 @@ public class ChatManager : MonoBehaviour
             {
                 // 左侧发送第一句话
                 string leftChat = m_leftChats.Peek();
-                m_view.PopBubble(m_view.m_leftBubblePrefab, m_view.m_leftBubbleposX, leftChat, m_view.m_soundManager.m_leftAudio);
+                m_view.PopBubble(m_view.m_BubblePrefab, leftChat, m_view.m_soundManager.m_leftAudio);
                 // 删除第一句话
                 m_leftChats.Dequeue();
                 m_timer = 0f;
