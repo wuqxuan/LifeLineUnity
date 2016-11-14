@@ -275,7 +275,7 @@ public class ChatManager : MonoBehaviour
             {
                 // 左侧发送第一句话
                 string leftChat = m_leftChats.Peek();
-                m_view.PopBubble(m_view.m_BubblePrefab, leftChat, m_view.m_soundManager.m_leftAudio);
+                m_view.PopBubble(leftChat, m_view.m_soundManager.m_leftAudio);
                 // 删除第一句话
                 m_leftChats.Dequeue();
                 m_timer = 0f;

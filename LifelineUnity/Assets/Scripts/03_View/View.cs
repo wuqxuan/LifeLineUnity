@@ -14,13 +14,16 @@ public class View : MonoBehaviour
     //======================================
     public Button m_startGameButton;
     public Button m_rePlayGameButton;
-    public Button m_BubblePrefab;
+    // public Button m_BubblePrefab;
     public RectTransform m_chatContainer;
-    public ScrollRect m_panelScroll;
-    public GameObject m_handle;
-    private Text m_bubbleText;
+   
+      private Text m_bubbleText;
     /// <summary> 对话气泡 </summary>
     private Button m_bubble;
+    public List<Button> m_templateButton = new List<Button>();
+    // public List<Button> m_popedButton = new List<Button>();
+    /// <summary> TemplateText的索引 </summary>
+    private int m_indexOfTemplateButton = 0;
     /// <summary> 已弹出的对话气泡 </summary>
     private List<Button> m_popedChatBubbles = new List<Button>();
     /// <summary> choices button </summary>
@@ -39,10 +42,10 @@ public class View : MonoBehaviour
     private bool m_isFromFallToScrollUp = false;
     /// <summary> 右侧对话是否为空 </summary>
     public bool m_isRightChatIsNull = true;
-    private const float mc_chatPanelBottomposY = -410f;
     private const float mc_sizeDeltaY = 1100f;
     private const float mc_heights = 0f;
     private const float mc_firstBubblePosY = 350f;
+    private const float mc_chatPanelBottomposY = -410f;
     /// <summary> 每行最大显示字符个数 </summary>
     private const int mc_charCountInPerLine = 18;
 
@@ -70,7 +73,7 @@ public class View : MonoBehaviour
     {
         // 初始化对话框
 #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-        m_handle.SetActive(false);
+       
 #endif
         ClearPopedBubble();
     }
@@ -89,27 +92,45 @@ public class View : MonoBehaviour
     }
 
     /// <summary> 弹出对话 </summary>
-    public void PopBubble(Button prefabType, string message, AudioClip audioType)
+    public void PopBubble(string message, AudioClip audioType)
     {
         // 获得用户选中的选择按钮的名字
         string seletedButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
         // 移动滑动条到底端
-        StartCoroutine(MoveTowardsBottom(0.1f, m_panelScroll.verticalNormalizedPosition, 0));
-        InstantiateBubble(prefabType, message);
+        // StartCoroutine(MoveTowardsBottom(0.1f, m_panelScroll.verticalNormalizedPosition, 0));
+        // InstantiateBubble(prefabType, message);
+        m_bubble = m_templateButton[m_indexOfTemplateButton];
+        m_bubble.gameObject.SetActive(true);
+        m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, GetNewBubblePosY(m_chatBubbleHeight));
+        m_popedChatBubbles.Add(m_templateButton[m_indexOfTemplateButton]);
         m_soundManager.PlayMusic(audioType);
         m_bubbleText = m_bubble.GetComponentInChildren<Text>();
-        if (seletedButtonName != null)
+          
+        HandleText(seletedButtonName, message);
+        // m_bubble.transform.SetParent(m_chatContainer, false);
+        // m_popedChatBubbles.Add(m_bubble);
+        m_indexOfTemplateButton += 1;
+        Debug.Log("m_indexOfTemplateButton = " + m_indexOfTemplateButton + " + m_isFromFallToScrollUp: " + m_isFromFallToScrollUp + "+ m_popedChatBubbles.Count:" + m_popedChatBubbles.Count);
+        if (m_templateButton.Count <= m_indexOfTemplateButton)
         {
-            switch (seletedButtonName)
+            m_indexOfTemplateButton = 0;
+        }
+    }
+
+    void HandleText(string buttonName, string message)
+    {
+        if (buttonName != null)
+        {
+            switch (buttonName)
             {
                 case "ButtonOne":
                     m_bubbleText.color = new Color32(109, 153, 255, 255);
-                    seletedButtonName = null;
+                    buttonName = null;
                     UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name = null;
                     break;
                 case "ButtonTwo":
                     m_bubbleText.color = new Color32(204, 214, 41, 255);
-                    seletedButtonName = null;
+                    buttonName = null;
                     UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name = null;
                     break;
                 default:
@@ -123,8 +144,6 @@ public class View : MonoBehaviour
         }
         // 聊天内容换行
         m_bubbleText.text = InsertWrap(message);
-        m_bubble.transform.SetParent(m_chatContainer, false);
-        m_popedChatBubbles.Add(m_bubble);
     }
 
     /// <summary> 隐藏消息选择面板 </summary>
@@ -171,15 +190,15 @@ public class View : MonoBehaviour
     }
 
     /// <summary> 生成bubble </summary>
-    private void InstantiateBubble(Button bubblePrefab, string message)
-    {
-        m_bubble = Instantiate(bubblePrefab) as Button;
-        m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, GetNewBubblePosY(m_chatBubbleHeight));
-    }
+    // private void InstantiateBubble(Button bubblePrefab, string message)
+    // {
+    //     m_bubble = Instantiate(bubblePrefab) as Button;
+    //     m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, GetNewBubblePosY(m_chatBubbleHeight));
+    // }
     /// <summary> 计算新插入对话的Bubble的posY </summary>
     private float GetNewBubblePosY(float newBubbleHeight)
     {
-        if ((m_popedChatBubbles.Count < 5))
+        if (m_popedChatBubbles.Count < m_templateButton.Count)
         {
             // 若已弹出的Bubble和即将插入的新Bubble总高度没达到滚屏限制高度， 
             // 新Bubble的posY从m_firstBubblePosY开始下移，下移距离是新Bubble高度。
@@ -192,6 +211,8 @@ public class View : MonoBehaviour
         {
             m_isFromFallToScrollUp = true;
             CheckAndScrollBubbles(newBubbleHeight);
+            m_popedChatBubbles.RemoveAt(0);
+            // m_popedBubblesHeights -= (newBubbleHeight);
             m_newBubblePosY = m_chatPanelBottomposY;
         }
         return m_newBubblePosY;
@@ -201,20 +222,12 @@ public class View : MonoBehaviour
     {
         if (m_isFromFallToScrollUp)
         {
-            HeightenChatPanel(newBubbleHeight);
+            // HeightenChatPanel(newBubbleHeight);
             ScrollUpBubbles(newBubbleHeight);
-            m_chatPanelBottomposY -= newBubbleHeight / 2;
+            // m_chatPanelBottomposY -= newBubbleHeight / 2;
         }
     }
-    /// <summary> 增大对话框高度 </summary>
-    private void HeightenChatPanel(float deltaHeight)
-    {
-        // 暂存当前对话框高度
-        var chatPanelHeight = m_chatContainer.sizeDelta.y;
-        chatPanelHeight += deltaHeight;
-        // 更新对话框高度
-        m_chatContainer.sizeDelta = new Vector2(m_chatContainer.sizeDelta.x, chatPanelHeight);
-    }
+
     /// <summary> 向上移动各个Bubble，移动距离是新增Bubble（包括间距）的高度 </summary>
     private void ScrollUpBubbles(float step)
     {
@@ -222,52 +235,52 @@ public class View : MonoBehaviour
         {
             float posX = m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition.x;
             float posY = m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition.y;
-            m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(posX, posY + step / 2.0f);
+            m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(posX, posY + step);
         }
     }
     /// <summary> 移动滑动条到底部 </summary>
     // 参考: http://www.theappguruz.com/blog/dynamic-scroll-view-in-unity-4-6-ui
-    private IEnumerator MoveTowardsBottom(float time, float startPosition, float endPosition)
-    {
-        float step = 0;
-        float rate = 1 / time;
-        while (step < 1)
-        {
-            step += rate * Time.deltaTime;
-            m_panelScroll.verticalNormalizedPosition = Mathf.Lerp(startPosition, endPosition, step);
-            yield return 0;
-        }
-    }
+    // private IEnumerator MoveTowardsBottom(float time, float startPosition, float endPosition)
+    // {
+    //     float step = 0;
+    //     float rate = 1 / time;
+    //     while (step < 1)
+    //     {
+    //         step += rate * Time.deltaTime;
+    //         m_panelScroll.verticalNormalizedPosition = Mathf.Lerp(startPosition, endPosition, step);
+    //         yield return 0;
+    //     }
+    // }
 
-    void Update()
-    {
-#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL
-#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-        TouchInput();
-#endif
-    }
-    /// <summary> 滑动屏幕显示滚动条 </summary>
-    private void TouchInput()
-    {
-        if (Input.touchCount > 0)
-        {
-            //Store the first touch detected.
-            Touch myTouch = Input.touches[0];
+//     void Update()
+//     {
+// #if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL
+// #elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+//         TouchInput();
+// #endif
+//     }
+//     /// <summary> 滑动屏幕显示滚动条 </summary>
+//     private void TouchInput()
+//     {
+//         if (Input.touchCount > 0)
+//         {
+//             //Store the first touch detected.
+//             Touch myTouch = Input.touches[0];
 
-            switch (myTouch.phase)
-            {
-                case TouchPhase.Began:
+//             switch (myTouch.phase)
+//             {
+//                 case TouchPhase.Began:
 
-                    break;
+//                     break;
 
-                case TouchPhase.Moved:
-                    m_handle.SetActive(true);
-                    break;
+//                 case TouchPhase.Moved:
+//                     m_handle.SetActive(true);
+//                     break;
 
-                case TouchPhase.Ended:
-                    m_handle.SetActive(false);
-                    break;
-            }
-        }
-    }
+//                 case TouchPhase.Ended:
+//                     m_handle.SetActive(false);
+//                     break;
+//             }
+//         }
+//     }
 }

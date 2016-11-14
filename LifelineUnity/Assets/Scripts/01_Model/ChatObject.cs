@@ -8,7 +8,7 @@ public class ChatObjectRight
     public void Say(View view, string message)
     {
         // 弹出新对话
-        view.PopBubble(view.m_BubblePrefab, message, view.m_soundManager.m_rightAudio);
+        view.PopBubble(message, view.m_soundManager.m_rightAudio);
         // 隐藏选择面板
         view.HideChoicePanel();
         view.m_isRightChatIsNull = true;
