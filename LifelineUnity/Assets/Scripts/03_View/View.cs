@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Text;
@@ -16,8 +15,8 @@ public class View : MonoBehaviour
     public Button m_rePlayGameButton;
     // public Button m_BubblePrefab;
     public RectTransform m_chatContainer;
-   
-      private Text m_bubbleText;
+
+    private Text m_bubbleText;
     /// <summary> 对话气泡 </summary>
     private Button m_bubble;
     public List<Button> m_templateButton = new List<Button>();
@@ -40,6 +39,7 @@ public class View : MonoBehaviour
     private float m_chatPanelBottomposY;
     /// <summary> 由下落转换到向上滚屏状态 </summary>
     private bool m_isFromFallToScrollUp = false;
+    private string m_seletedButtonName = null;
     /// <summary> 右侧对话是否为空 </summary>
     public bool m_isRightChatIsNull = true;
     private const float mc_sizeDeltaY = 1100f;
@@ -51,9 +51,7 @@ public class View : MonoBehaviour
 
     //==============================================================================================
     // methods
-    /// <summary>
-    /// Awake is called when the script instance is being loaded.
-    /// </summary>
+
     void Awake()
     {
         m_soundManager = FindObjectOfType(typeof(SoundManager)) as SoundManager;
@@ -69,16 +67,9 @@ public class View : MonoBehaviour
         m_rePlayGameButton.gameObject.SetActive(false);
     }
 
-    public void Initialize()
-    {
-        // 初始化对话框
-#if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-       
-#endif
-        ClearPopedBubble();
-    }
+
     // 删除聊天数据
-    public void ClearPopedBubble()
+    public void Initialize()
     {
         foreach (var popedBubble in m_popedChatBubbles)
         {
@@ -95,43 +86,34 @@ public class View : MonoBehaviour
     public void PopBubble(string message, AudioClip audioType)
     {
         // 获得用户选中的选择按钮的名字
-        string seletedButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
-        // 移动滑动条到底端
-        // StartCoroutine(MoveTowardsBottom(0.1f, m_panelScroll.verticalNormalizedPosition, 0));
-        // InstantiateBubble(prefabType, message);
+        string currentButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
         m_bubble = m_templateButton[m_indexOfTemplateButton];
         m_bubble.gameObject.SetActive(true);
         m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, GetNewBubblePosY(m_chatBubbleHeight));
         m_popedChatBubbles.Add(m_templateButton[m_indexOfTemplateButton]);
         m_soundManager.PlayMusic(audioType);
         m_bubbleText = m_bubble.GetComponentInChildren<Text>();
-          
-        HandleText(seletedButtonName, message);
-        // m_bubble.transform.SetParent(m_chatContainer, false);
-        // m_popedChatBubbles.Add(m_bubble);
+
+        HandleMessage(currentButtonName, message);
         m_indexOfTemplateButton += 1;
-        Debug.Log("m_indexOfTemplateButton = " + m_indexOfTemplateButton + " + m_isFromFallToScrollUp: " + m_isFromFallToScrollUp + "+ m_popedChatBubbles.Count:" + m_popedChatBubbles.Count);
         if (m_templateButton.Count <= m_indexOfTemplateButton)
         {
             m_indexOfTemplateButton = 0;
         }
     }
-
-    void HandleText(string buttonName, string message)
+    void HandleMessage(string buttonName, string message)
     {
-        if (buttonName != null)
+        if (buttonName != m_seletedButtonName)
         {
             switch (buttonName)
             {
                 case "ButtonOne":
                     m_bubbleText.color = new Color32(109, 153, 255, 255);
-                    buttonName = null;
-                    UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name = null;
+                    m_seletedButtonName = buttonName;
                     break;
                 case "ButtonTwo":
                     m_bubbleText.color = new Color32(204, 214, 41, 255);
-                    buttonName = null;
-                    UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name = null;
+                    m_seletedButtonName = buttonName;
                     break;
                 default:
                     m_bubbleText.color = new Color32(210, 210, 210, 255);
@@ -189,19 +171,11 @@ public class View : MonoBehaviour
         return wrapMessage.ToString();
     }
 
-    /// <summary> 生成bubble </summary>
-    // private void InstantiateBubble(Button bubblePrefab, string message)
-    // {
-    //     m_bubble = Instantiate(bubblePrefab) as Button;
-    //     m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, GetNewBubblePosY(m_chatBubbleHeight));
-    // }
     /// <summary> 计算新插入对话的Bubble的posY </summary>
     private float GetNewBubblePosY(float newBubbleHeight)
     {
         if (m_popedChatBubbles.Count < m_templateButton.Count)
         {
-            // 若已弹出的Bubble和即将插入的新Bubble总高度没达到滚屏限制高度， 
-            // 新Bubble的posY从m_firstBubblePosY开始下移，下移距离是新Bubble高度。
             m_newBubblePosY = mc_firstBubblePosY - m_popedBubblesHeights;
             m_popedBubblesHeights += newBubbleHeight;
         }
@@ -238,49 +212,4 @@ public class View : MonoBehaviour
             m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(posX, posY + step);
         }
     }
-    /// <summary> 移动滑动条到底部 </summary>
-    // 参考: http://www.theappguruz.com/blog/dynamic-scroll-view-in-unity-4-6-ui
-    // private IEnumerator MoveTowardsBottom(float time, float startPosition, float endPosition)
-    // {
-    //     float step = 0;
-    //     float rate = 1 / time;
-    //     while (step < 1)
-    //     {
-    //         step += rate * Time.deltaTime;
-    //         m_panelScroll.verticalNormalizedPosition = Mathf.Lerp(startPosition, endPosition, step);
-    //         yield return 0;
-    //     }
-    // }
-
-//     void Update()
-//     {
-// #if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL
-// #elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-//         TouchInput();
-// #endif
-//     }
-//     /// <summary> 滑动屏幕显示滚动条 </summary>
-//     private void TouchInput()
-//     {
-//         if (Input.touchCount > 0)
-//         {
-//             //Store the first touch detected.
-//             Touch myTouch = Input.touches[0];
-
-//             switch (myTouch.phase)
-//             {
-//                 case TouchPhase.Began:
-
-//                     break;
-
-//                 case TouchPhase.Moved:
-//                     m_handle.SetActive(true);
-//                     break;
-
-//                 case TouchPhase.Ended:
-//                     m_handle.SetActive(false);
-//                     break;
-//             }
-//         }
-//     }
 }

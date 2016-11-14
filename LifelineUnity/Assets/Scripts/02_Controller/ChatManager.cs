@@ -35,7 +35,7 @@ public class ChatManager : MonoBehaviour
     }
     void Start()
     {
-        status_savePath = Application.persistentDataPath + "/status1232.json";
+        status_savePath = Application.persistentDataPath + "/status1232901900.json";
         m_view = FindObjectOfType(typeof(View)) as View;
         LoadStoryData();
         // LoadStatusData();
