@@ -1,4 +1,4 @@
-﻿// Lifeline story data Copyright 2falsetrue5, 3 Minute Games LLC. 
+// Lifeline story data Copyright 2falsetrue5, 3 Minute Games LLC. 
 // http://3mingames.com
 // If you're reading this, you're in for spoilers but you probably don't care! Thanks for playing, and have fun.
 
@@ -1593,7 +1593,7 @@ Tau Ceti已经下山了，而且我不介意告诉你，这里比一个哥特萝
 后面几百码的峡谷壁上有个缓坡。
 (不，我不知道怎么把这个换算成米了。)
 我讨厌浪费时间原路返回…
-…不过这比“在离最近的医院5falsefalsefalse光年外摔断腿”这个剧本可好多了。
+…不过这比“在离最近的医院5000光年外摔断腿”这个剧本可好多了。
 总之，我出发了。
 [[delay 45m|craterlip]]
 

@@ -39,10 +39,10 @@ public class View : MonoBehaviour
     private bool m_isFromFallToScrollUp = false;
     /// <summary> 右侧对话是否为空 </summary>
     public bool m_isRightChatIsNull = true;
-    private const float mc_chatPanelBottomposY = -430f;
+    private const float mc_chatPanelBottomposY = -410f;
     private const float mc_sizeDeltaY = 1100f;
     private const float mc_heights = 0f;
-    private const float mc_firstBubblePosY = 330f;
+    private const float mc_firstBubblePosY = 350f;
     /// <summary> 每行最大显示字符个数 </summary>
     private const int mc_charCountInPerLine = 18;
 
@@ -66,12 +66,12 @@ public class View : MonoBehaviour
         m_rePlayGameButton.gameObject.SetActive(false);
     }
 
-   public void Initialize()
+    public void Initialize()
     {
         // 初始化对话框
-    #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+#if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
         m_handle.SetActive(false);
-    #endif
+#endif
         ClearPopedBubble();
     }
     // 删除聊天数据
@@ -91,11 +91,36 @@ public class View : MonoBehaviour
     /// <summary> 弹出对话 </summary>
     public void PopBubble(Button prefabType, string message, AudioClip audioType)
     {
+        // 获得用户选中的选择按钮的名字
+        string seletedButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
         // 移动滑动条到底端
         StartCoroutine(MoveTowardsBottom(0.1f, m_panelScroll.verticalNormalizedPosition, 0));
         InstantiateBubble(prefabType, message);
         m_soundManager.PlayMusic(audioType);
         m_bubbleText = m_bubble.GetComponentInChildren<Text>();
+        if (seletedButtonName != null)
+        {
+            switch (seletedButtonName)
+            {
+                case "ButtonOne":
+                    m_bubbleText.color = new Color32(109, 153, 255, 255);
+                    seletedButtonName = null;
+                    UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name = null;
+                    break;
+                case "ButtonTwo":
+                    m_bubbleText.color = new Color32(204, 214, 41, 255);
+                    seletedButtonName = null;
+                    UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name = null;
+                    break;
+                default:
+                    m_bubbleText.color = new Color32(210, 210, 210, 255);
+                    break;
+            }
+        }
+        else
+        {
+            m_bubbleText.color = new Color32(210, 210, 210, 255);
+        }
         // 聊天内容换行
         m_bubbleText.text = InsertWrap(message);
         m_bubble.transform.SetParent(m_chatContainer, false);
