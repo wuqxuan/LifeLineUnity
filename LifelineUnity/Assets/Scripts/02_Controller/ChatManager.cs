@@ -5,7 +5,7 @@ using System.Collections;
 using SimpleJSON;
 using System.IO;
 using System;
-using DG.Tweening;
+// using DG.Tweening;
 public class ChatManager : MonoBehaviour
 {
     //==============================================================================================
@@ -35,7 +35,7 @@ public class ChatManager : MonoBehaviour
     }
     void Start()
     {
-        status_savePath = Application.persistentDataPath + "/status0100900.json";
+        status_savePath = Application.persistentDataPath + "/status111.json";
         m_view = FindObjectOfType(typeof(View)) as View;
         LoadStoryData();
         // LoadStatusData();
