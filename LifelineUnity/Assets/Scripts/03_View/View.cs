@@ -9,8 +9,11 @@ public class View : MonoBehaviour
 {
     //==============================================================================================
     // Fields
+    private ChatManager m_chatManager;
     public SoundManager m_soundManager;
     //======================================
+    public Button m_startGameButton;
+    public Button m_rePlayGameButton;
     public Button m_BubblePrefab;
     public RectTransform m_chatContainer;
     public ScrollRect m_panelScroll;
@@ -45,14 +48,25 @@ public class View : MonoBehaviour
 
     //==============================================================================================
     // methods
-
+    /// <summary>
+    /// Awake is called when the script instance is being loaded.
+    /// </summary>
+    void Awake()
+    {
+        m_soundManager = FindObjectOfType(typeof(SoundManager)) as SoundManager;
+        m_chatManager = FindObjectOfType(typeof(ChatManager)) as ChatManager;
+    }
     void Start()
     {
         Initialize();
-        m_soundManager = FindObjectOfType(typeof(SoundManager)) as SoundManager;
+        m_startGameButton.onClick.AddListener(() => m_chatManager.StartGame());
+        m_rePlayGameButton.onClick.AddListener(() => m_chatManager.RePlayGame());
+        m_startGameButton.gameObject.GetComponentInChildren<Text>().text = "开始游戏";
+        m_rePlayGameButton.gameObject.GetComponentInChildren<Text>().text = "重新开始游戏";
+        m_rePlayGameButton.gameObject.SetActive(false);
     }
 
-    void Initialize()
+   public void Initialize()
     {
         // 初始化对话框
     #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
@@ -202,10 +216,10 @@ public class View : MonoBehaviour
 
     void Update()
     {
-    #if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL
-    #elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL
+#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
         TouchInput();
-    #endif
+#endif
     }
     /// <summary> 滑动屏幕显示滚动条 </summary>
     private void TouchInput()

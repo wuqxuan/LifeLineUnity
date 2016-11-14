@@ -49,26 +49,11 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Plugins\Editor\VSCode.cs" />
-     <Compile Include="Assets\Plugins\StansAssets\Modules\MobileNativePopUps\Editor\MNPInit.cs" />
-     <Compile Include="Assets\Plugins\StansAssets\Modules\MobileNativePopUps\Editor\MNP_PlatformMenu.cs" />
-     <Compile Include="Assets\Plugins\StansAssets\Modules\MobileNativePopUps\Editor\MNP_PlatformSettingsEditor.cs" />
-     <Compile Include="Assets\Plugins\StansAssets\Support\Common\Editor\Scripts\SA_Bool.cs" />
-     <Compile Include="Assets\Plugins\StansAssets\Support\Common\Editor\Scripts\SA_Instalation.cs" />
-     <Compile Include="Assets\Plugins\StansAssets\Support\Common\Editor\Scripts\SA_RemoveTool.cs" />
-     <Compile Include="Assets\Plugins\StansAssets\Support\Common\Editor\Scripts\SA_Tools.cs" />
-     <Compile Include="Assets\Plugins\StansAssets\Support\Common\Editor\Scripts\SA_VersionsManager.cs" />
-     <Compile Include="Assets\Plugins\StansAssets\Support\Common\Editor\Scripts\SA_YesNo.cs" />
-     <None Include="Assets\Plugins\StansAssets\Modules\MobileNativePopUps\Documentation\ReadMe.txt" />
      <None Include="Assets\Plugins\DOTween\DOTween50.xml" />
-     <None Include="Assets\Plugins\StansAssets\Support\Versions\MNP_VersionInfo.txt" />
-     <None Include="Assets\Plugins\StansAssets\Support\NativeLibraries\IOS\ISN_NativeCore.mm.txt" />
      <None Include="Assets\Resources\Data\StoryData_cn.txt" />
-     <None Include="Assets\Plugins\StansAssets\Support\NativeLibraries\Android\mobile-native-popups.txt" />
-     <None Include="Assets\Plugins\StansAssets\Support\NativeLibraries\IOS\ISN_NativeCore.h.txt" />
      <None Include="Assets\Plugins\DOTween\readme.txt" />
      <None Include="Assets\Plugins\DOTween\DOTween43.xml" />
      <None Include="Assets\Plugins\DOTween\DOTween46.xml" />
-     <None Include="Assets\Plugins\StansAssets\Support\NativeLibraries\Android\mobile-native-popups.jar.txt" />
  <Reference Include="UnityEngine.Networking">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>

@@ -1,9 +1,11 @@
 ﻿
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 using SimpleJSON;
 using System.IO;
 using System;
+using DG.Tweening;
 public class ChatManager : MonoBehaviour
 {
     //==============================================================================================
@@ -11,6 +13,7 @@ public class ChatManager : MonoBehaviour
     private View m_view;
     public Queue<string> m_leftChats = new Queue<string>();
     private float m_timer = 0.0f;
+    private const float mc_timerDuration = 1.5f;
     /// <summary> 右侧对话 </summary>
     private ChatObjectRight rightChat = new ChatObjectRight();
     /// <summary> 左侧对话 </summary>
@@ -21,17 +24,23 @@ public class ChatManager : MonoBehaviour
     private JSONNode choices = new JSONClass();
     private string status_savePath;
     private string currentScene;
+    
 
     //==============================================================================================
     // Methods
 
+    void Awake()
+    {
+        Application.targetFrameRate = 10;
+    }
     void Start()
     {
-        status_savePath = Application.persistentDataPath + "/status01.json";
+        status_savePath = Application.persistentDataPath + "/status0100900.json";
         m_view = FindObjectOfType(typeof(View)) as View;
         LoadStoryData();
-        LoadStatusData();
+        // LoadStatusData();
     }
+
     void Update()
     {
         if (status["atScene"] != null)
@@ -40,7 +49,9 @@ public class ChatManager : MonoBehaviour
             // TODO: 弹出 gameover 界面
             if (currentScene.Equals("gameover"))   // 不能直接用 if(status["atScene"].Equals("gameover"))
             {
-                SaveStatusData("Start");
+                AtScene(currentScene);
+                StartCoroutine(WaitForHideRePlayButton(3f));
+                // SaveStatusData("Start");    // status["atScene"] = "Start"
             }
             else
             {
@@ -50,6 +61,23 @@ public class ChatManager : MonoBehaviour
         AutoPopLeftChat();
     }
 
+    public void StartGame()
+    {
+         LoadStatusData();
+         m_view.m_startGameButton.gameObject.SetActive(false);
+    }
+    public void RePlayGame()
+    {
+         SaveStatusData("Start");
+         m_view.m_rePlayGameButton.gameObject.SetActive(false);
+         m_view.Initialize();
+    }
+
+    IEnumerator WaitForHideRePlayButton(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        m_view.m_rePlayGameButton.gameObject.SetActive(true);
+    }
     void LoadStoryData()
     {
         // 以下方式通过 Adroid, Mac 测试, iOS不通过
@@ -243,7 +271,7 @@ public class ChatManager : MonoBehaviour
             m_view.HideChoicePanel();
             m_timer += Time.deltaTime;
             // 若左侧对话不为空，且计时器时间到，继续下一句.
-            while (m_leftChats.Count > 0 && m_timer >= 1f)
+            while (m_leftChats.Count > 0 && m_timer >= mc_timerDuration)
             {
                 // 左侧发送第一句话
                 string leftChat = m_leftChats.Peek();
