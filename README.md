@@ -1,5 +1,5 @@
 <!--![](http://upload-images.jianshu.io/upload_images/266748-635b8f94a4500b23.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240/imageView/2/w/619/q/90)-->
-<img src="http://upload-images.jianshu.io/upload_images/266748-635b8f94a4500b23.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" width = "800" height = "500" alt="图片名称" align=center />
+<img src="http://upload-images.jianshu.io/upload_images/266748-635b8f94a4500b23.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" width = "850" height = "500" alt="图片名称" align=center />
 ## Lifeline made with Unity
   
 Unity(5.4.2f2) 版 **Lifeline**， 代码参考了 [生命线：静夜 on Telegram](http://www.jianshu.com/p/5a480d2d5dc6)，Unity 中使用 [SimpleJSON](http://wiki.unity3d.com/index.php/SimpleJSON) 解析 json 文本。
@@ -24,13 +24,12 @@ python lifeline_on_terminal.py
 ```
 
 
-
 ### Project   
   
 - Open Assets/Scenes/Level_Mobile  
 - Set Game scene resolution to 9:16     
   
- ![](https://github.com/wuqxuan/LifeLineUnity/raw/master/image/Lifeline.png)   
 
+<img src="https://github.com/wuqxuan/LifeLineUnity/raw/master/image/Lifeline.png" width = "300" height = "500" alt="图片名称" align=center />
 
 
