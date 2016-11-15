@@ -35,7 +35,7 @@ public class ChatManager : MonoBehaviour
     }
     void Start()
     {
-        status_savePath = Application.persistentDataPath + "/status12329019000000000000000001010110101010101.json";
+        status_savePath = Application.persistentDataPath + "/status0.json";
         m_view = FindObjectOfType(typeof(View)) as View;
         LoadStoryData();
     }
@@ -52,7 +52,7 @@ public class ChatManager : MonoBehaviour
             if (m_view.m_isGameOver)
             {
                 m_view.m_isGameOver = false;
-                StartCoroutine(WaitForRePlayButton(0.5f));
+                StartCoroutine(WaitForRePlayButton(0.3f));
             }
         }
         AutoPopLeftChat();
@@ -104,7 +104,7 @@ public class ChatManager : MonoBehaviour
         }
         else
         {
-            status["atScene"] = "wrappingthingsup";
+            status["atScene"] = "Start";
         }
     }
 

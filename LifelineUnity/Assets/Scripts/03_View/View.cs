@@ -67,12 +67,9 @@ public class View : MonoBehaviour
         m_startGameButton.gameObject.GetComponentInChildren<Text>().text = "开始游戏";
         m_rePlayGameButton.gameObject.GetComponentInChildren<Text>().text = "重新开始游戏";
     }
-
-
     // 初始化
     public void Initialize()
     {
-         Debug.Log("m_popedChatBubbles = " + m_popedChatBubbles.Count);
         if (m_popedChatBubbles.Count != 0)
         {
             foreach (var bullble in m_popedChatBubbles)
@@ -82,10 +79,8 @@ public class View : MonoBehaviour
         }
         m_rePlayGameButton.gameObject.SetActive(false);
         m_popedChatBubbles.Clear();
-        Debug.Log("m_popedChatBubbles = " + m_popedChatBubbles.Count);
         m_newBubblePosY = mc_firstBubblePosY;
         m_popedBubblesHeights = mc_heights;
-        m_chatContainer.sizeDelta = new Vector2(m_chatContainer.sizeDelta.x, mc_sizeDeltaY);
         m_chatPanelBottomposY = mc_chatPanelBottomposY;
         m_indexOfTemplateButton = 0;
     }
@@ -101,7 +96,6 @@ public class View : MonoBehaviour
         m_popedChatBubbles.Add(m_templateButton[m_indexOfTemplateButton]);
         m_soundManager.PlayMusic(audioType);
         m_bubbleText = m_bubble.GetComponentInChildren<Text>();
-        // Debug.Log("currentButtonName = " + currentButtonName + " m_isWaitingClick" + m_isWaitingClick);
         HandleMessage(currentButtonName, message);
         m_indexOfTemplateButton += 1;
         if (m_templateButton.Count <= m_indexOfTemplateButton)
@@ -109,7 +103,6 @@ public class View : MonoBehaviour
             m_indexOfTemplateButton = 0;
         }
         if (message.Equals("游戏结束")) m_isGameOver = true;
-        // Debug.Log("message = " + message + " m_isGameOver: " + m_isGameOver);
     }
     void HandleMessage(string buttonName, string message)
     {
