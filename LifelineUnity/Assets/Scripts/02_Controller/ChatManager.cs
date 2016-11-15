@@ -13,7 +13,7 @@ public class ChatManager : MonoBehaviour
     private View m_view;
     public Queue<string> m_leftChats = new Queue<string>();
     private float m_timer = 0.0f;
-    private const float mc_timerDuration = 0.1f;
+    private const float mc_timerDuration = 1.5f;
     /// <summary> 右侧对话 </summary>
     private ChatObjectRight rightChat = new ChatObjectRight();
     /// <summary> 左侧对话 </summary>
