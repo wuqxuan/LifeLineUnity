@@ -13,7 +13,7 @@ public class ChatManager : MonoBehaviour
     private View m_view;
     public Queue<string> m_leftChats = new Queue<string>();
     private float m_timer = 0.0f;
-    private const float mc_timerDuration = 1.5f;
+    private const float mc_timerDuration = 0.1f;
     /// <summary> 右侧对话 </summary>
     private ChatObjectRight rightChat = new ChatObjectRight();
     /// <summary> 左侧对话 </summary>
@@ -24,7 +24,7 @@ public class ChatManager : MonoBehaviour
     private JSONNode choices = new JSONClass();
     private string status_savePath;
     private string currentScene;
-    
+
 
     //==============================================================================================
     // Methods
@@ -35,10 +35,9 @@ public class ChatManager : MonoBehaviour
     }
     void Start()
     {
-        status_savePath = Application.persistentDataPath + "/status1232901900.json";
+        status_savePath = Application.persistentDataPath + "/status12329019000000000000000001010110101010101.json";
         m_view = FindObjectOfType(typeof(View)) as View;
         LoadStoryData();
-        // LoadStatusData();
     }
 
     void Update()
@@ -46,16 +45,14 @@ public class ChatManager : MonoBehaviour
         if (status["atScene"] != null)
         {
             currentScene = status["atScene"];
-            // TODO: 弹出 gameover 界面
-            if (currentScene.Equals("gameover"))   // 不能直接用 if(status["atScene"].Equals("gameover"))
+            AtScene(currentScene);     // set: status["atScene"] = null
+        }
+        else
+        {
+            if (m_view.m_isGameOver)
             {
-                AtScene(currentScene);
-                StartCoroutine(WaitForHideRePlayButton(3f));
-                // SaveStatusData("Start");    // status["atScene"] = "Start"
-            }
-            else
-            {
-                AtScene(currentScene);     // set: status["atScene"] = null
+                m_view.m_isGameOver = false;
+                StartCoroutine(WaitForRePlayButton(0.5f));
             }
         }
         AutoPopLeftChat();
@@ -63,20 +60,27 @@ public class ChatManager : MonoBehaviour
 
     public void StartGame()
     {
-         LoadStatusData();
-         m_view.m_startGameButton.gameObject.SetActive(false);
+        LoadStatusData();
+        m_view.m_startGameButton.gameObject.SetActive(false);
+        m_view.m_panleScroll.SetActive(true);
     }
     public void RePlayGame()
     {
-         SaveStatusData("Start");
-         m_view.m_rePlayGameButton.gameObject.SetActive(false);
-         m_view.Initialize();
+        m_view.m_isGameOver = false;
+        m_view.m_rePlayGameButton.gameObject.SetActive(false);
+        m_view.Initialize();
+        StartCoroutine(WaitForRePlayGame(0.5f));
     }
 
-    IEnumerator WaitForHideRePlayButton(float duration)
+    IEnumerator WaitForRePlayButton(float duration)
     {
         yield return new WaitForSeconds(duration);
         m_view.m_rePlayGameButton.gameObject.SetActive(true);
+    }
+    IEnumerator WaitForRePlayGame(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        SaveStatusData("Start");
     }
     void LoadStoryData()
     {
@@ -100,7 +104,7 @@ public class ChatManager : MonoBehaviour
         }
         else
         {
-            status["atScene"] = "Start";
+            status["atScene"] = "wrappingthingsup";
         }
     }
 

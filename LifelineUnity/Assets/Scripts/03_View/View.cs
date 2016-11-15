@@ -11,9 +11,9 @@ public class View : MonoBehaviour
     private ChatManager m_chatManager;
     public SoundManager m_soundManager;
     //======================================
+    public GameObject m_panleScroll;
     public Button m_startGameButton;
     public Button m_rePlayGameButton;
-    // public Button m_BubblePrefab;
     public RectTransform m_chatContainer;
 
     private Text m_bubbleText;
@@ -39,9 +39,10 @@ public class View : MonoBehaviour
     private float m_chatPanelBottomposY;
     /// <summary> 由下落转换到向上滚屏状态 </summary>
     private bool m_isFromFallToScrollUp = false;
-    private string m_seletedButtonName = null;
+    private bool m_isWaitingClick = false;
     /// <summary> 右侧对话是否为空 </summary>
     public bool m_isRightChatIsNull = true;
+    public bool m_isGameOver = false;
     private const float mc_sizeDeltaY = 1100f;
     private const float mc_heights = 0f;
     private const float mc_firstBubblePosY = 350f;
@@ -60,60 +61,67 @@ public class View : MonoBehaviour
     void Start()
     {
         Initialize();
+        m_panleScroll.SetActive(false);
         m_startGameButton.onClick.AddListener(() => m_chatManager.StartGame());
         m_rePlayGameButton.onClick.AddListener(() => m_chatManager.RePlayGame());
         m_startGameButton.gameObject.GetComponentInChildren<Text>().text = "开始游戏";
         m_rePlayGameButton.gameObject.GetComponentInChildren<Text>().text = "重新开始游戏";
-        m_rePlayGameButton.gameObject.SetActive(false);
     }
 
 
-    // 删除聊天数据
+    // 初始化
     public void Initialize()
     {
-        foreach (var popedBubble in m_popedChatBubbles)
+         Debug.Log("m_popedChatBubbles = " + m_popedChatBubbles.Count);
+        if (m_popedChatBubbles.Count != 0)
         {
-            Destroy(popedBubble.gameObject);
+            foreach (var bullble in m_popedChatBubbles)
+            {
+                bullble.gameObject.SetActive(false);
+            }
         }
+        m_rePlayGameButton.gameObject.SetActive(false);
         m_popedChatBubbles.Clear();
+        Debug.Log("m_popedChatBubbles = " + m_popedChatBubbles.Count);
         m_newBubblePosY = mc_firstBubblePosY;
         m_popedBubblesHeights = mc_heights;
         m_chatContainer.sizeDelta = new Vector2(m_chatContainer.sizeDelta.x, mc_sizeDeltaY);
         m_chatPanelBottomposY = mc_chatPanelBottomposY;
+        m_indexOfTemplateButton = 0;
     }
 
     /// <summary> 弹出对话 </summary>
     public void PopBubble(string message, AudioClip audioType)
     {
-        // 获得用户选中的选择按钮的名字
-        string currentButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
+        string currentButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name; // 获得点击的按钮的名字
         m_bubble = m_templateButton[m_indexOfTemplateButton];
         m_bubble.gameObject.SetActive(true);
         m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, GetNewBubblePosY(m_chatBubbleHeight));
+
         m_popedChatBubbles.Add(m_templateButton[m_indexOfTemplateButton]);
         m_soundManager.PlayMusic(audioType);
         m_bubbleText = m_bubble.GetComponentInChildren<Text>();
-
+        // Debug.Log("currentButtonName = " + currentButtonName + " m_isWaitingClick" + m_isWaitingClick);
         HandleMessage(currentButtonName, message);
         m_indexOfTemplateButton += 1;
         if (m_templateButton.Count <= m_indexOfTemplateButton)
         {
             m_indexOfTemplateButton = 0;
         }
+        if (message.Equals("游戏结束")) m_isGameOver = true;
+        // Debug.Log("message = " + message + " m_isGameOver: " + m_isGameOver);
     }
     void HandleMessage(string buttonName, string message)
     {
-        if (buttonName != m_seletedButtonName)
+        if (m_isWaitingClick)
         {
             switch (buttonName)
             {
                 case "ButtonOne":
-                    m_bubbleText.color = new Color32(109, 153, 255, 255);
-                    m_seletedButtonName = buttonName;
+                    m_bubbleText.color = new Color32(109, 153, 255, 255);   // 蓝色
                     break;
                 case "ButtonTwo":
-                    m_bubbleText.color = new Color32(204, 214, 41, 255);
-                    m_seletedButtonName = buttonName;
+                    m_bubbleText.color = new Color32(204, 214, 41, 255);    // 黄色
                     break;
                 default:
                     m_bubbleText.color = new Color32(210, 210, 210, 255);
@@ -132,6 +140,7 @@ public class View : MonoBehaviour
     public void HideChoicePanel()
     {
         ShowChoicePanel(false);
+        m_isWaitingClick = false;
     }
 
     /// <summary> 显示消息选择面板 </summary>
@@ -141,6 +150,7 @@ public class View : MonoBehaviour
         {
             m_choiceButtons[i].gameObject.SetActive(isActive);
         }
+        m_isWaitingClick = true;
     }
     /// <summary> 设置选择面板 </summary>
     public void SetChoice(Dictionary<string, Action<string>> choices)
@@ -158,7 +168,6 @@ public class View : MonoBehaviour
                 m_choiceButtons[i].onClick.AddListener(() => choices[keys[buttonIndex]](keys[buttonIndex]));
             }
         }
-
     }
     /// <summary> 聊天内容换行 </summary>
     private string InsertWrap(string message)
@@ -184,32 +193,23 @@ public class View : MonoBehaviour
         else
         {
             m_isFromFallToScrollUp = true;
-            CheckAndScrollBubbles(newBubbleHeight);
+            ScrollUpBubbles(newBubbleHeight);
             m_popedChatBubbles.RemoveAt(0);
-            // m_popedBubblesHeights -= (newBubbleHeight);
             m_newBubblePosY = m_chatPanelBottomposY;
         }
         return m_newBubblePosY;
     }
-    /// <summary> 检查是否滚屏，并更新对话框的底边posY </summary>
-    private void CheckAndScrollBubbles(float newBubbleHeight)
+    /// <summary> 向上移动各个Bubble，移动距离是新增Bubble（包括间距）的高度 </summary>
+    private void ScrollUpBubbles(float height)
     {
         if (m_isFromFallToScrollUp)
         {
-            // HeightenChatPanel(newBubbleHeight);
-            ScrollUpBubbles(newBubbleHeight);
-            // m_chatPanelBottomposY -= newBubbleHeight / 2;
-        }
-    }
-
-    /// <summary> 向上移动各个Bubble，移动距离是新增Bubble（包括间距）的高度 </summary>
-    private void ScrollUpBubbles(float step)
-    {
-        for (int i = 0; i < m_popedChatBubbles.Count; i++)
-        {
-            float posX = m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition.x;
-            float posY = m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition.y;
-            m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(posX, posY + step);
+            for (int i = 0; i < m_popedChatBubbles.Count; i++)
+            {
+                float posX = m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition.x;
+                float posY = m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition.y;
+                m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(posX, posY + height);
+            }
         }
     }
 }
