@@ -14,41 +14,37 @@ public class View : MonoBehaviour
     public GameObject m_panleScroll;
     public Button m_startGameButton;
     public Button m_rePlayGameButton;
-    public RectTransform m_chatContainer;
-
     private Text m_bubbleText;
     /// <summary> 对话气泡 </summary>
     private Button m_bubble;
     public List<Button> m_templateButton = new List<Button>();
-    // public List<Button> m_popedButton = new List<Button>();
-    /// <summary> TemplateText的索引 </summary>
-    private int m_indexOfTemplateButton = 0;
     /// <summary> 已弹出的对话气泡 </summary>
     private List<Button> m_popedChatBubbles = new List<Button>();
     /// <summary> choices button </summary>
     public List<Button> m_choiceButtons = new List<Button>();
-    /// <summary> 单行对话气泡高度（Button） </summary>
-    private float m_chatBubbleHeight = 180f + m_gapBetweenBubble;
-    /// <summary> 气泡间的间隙 </summary>
-    private static float m_gapBetweenBubble = 10f;
-    /// <summary> 已弹出对话的总高度 </summary>
-    private float m_popedBubblesHeights = 0.0f;
     /// <summary> 新弹出对话气泡的posY </summary>
     private float m_newBubblePosY;
-    /// <summary> 对话框底边的posY </summary>
-    private float m_chatPanelBottomposY;
+
     /// <summary> 由下落转换到向上滚屏状态 </summary>
     private bool m_isFromFallToScrollUp = false;
     private bool m_isWaitingClick = false;
     /// <summary> 右侧对话是否为空 </summary>
     public bool m_isRightChatIsNull = true;
-    public bool m_isGameOver = false;
-    private const float mc_sizeDeltaY = 1100f;
-    private const float mc_heights = 0f;
-    private const float mc_firstBubblePosY = 350f;
-    private const float mc_chatPanelBottomposY = -410f;
+    /// <summary> TemplateText的索引 </summary>
+    private int m_indexOfTemplateButton;
+    /// <summary> 已弹出对话的总高度 </summary>
+    private float m_popedBubblesHeights;
+    /// <summary> 对话框底边的posY </summary>
+    private float m_chatPanelBottomposY;
+    private const float POPED_BUBBLES_HEIGHT = 0f;
+    private const float FIRST_BUBBLE_POSY = 350f;
+    private const float CHAT_PANEL_BOTTOM_POSY = -410f;
+    /// <summary> 气泡高度（Button） </summary>
+    private const float BUBBLE_HEIGHT = 180f;
+    /// <summary> 气泡间的间隙 </summary>
+    private const float GAP_BETEEMN_BUBBLE = 10f;
     /// <summary> 每行最大显示字符个数 </summary>
-    private const int mc_charCountInPerLine = 18;
+    private const int MAX_CHAR_NUMBER_PER_LINE = 18;
 
     //==============================================================================================
     // methods
@@ -79,9 +75,9 @@ public class View : MonoBehaviour
         }
         m_rePlayGameButton.gameObject.SetActive(false);
         m_popedChatBubbles.Clear();
-        m_newBubblePosY = mc_firstBubblePosY;
-        m_popedBubblesHeights = mc_heights;
-        m_chatPanelBottomposY = mc_chatPanelBottomposY;
+        m_newBubblePosY = FIRST_BUBBLE_POSY;
+        m_popedBubblesHeights = POPED_BUBBLES_HEIGHT;
+        m_chatPanelBottomposY = CHAT_PANEL_BOTTOM_POSY;
         m_indexOfTemplateButton = 0;
     }
 
@@ -91,21 +87,22 @@ public class View : MonoBehaviour
         string currentButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name; // 获得点击的按钮的名字
         m_bubble = m_templateButton[m_indexOfTemplateButton];
         m_bubble.gameObject.SetActive(true);
-        m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, GetNewBubblePosY(m_chatBubbleHeight));
+        m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, GetNewBubblePosY(BUBBLE_HEIGHT + GAP_BETEEMN_BUBBLE));
 
         m_popedChatBubbles.Add(m_templateButton[m_indexOfTemplateButton]);
-        m_soundManager.PlayMusic(audioType);
-        m_bubbleText = m_bubble.GetComponentInChildren<Text>();
-        HandleMessage(currentButtonName, message);
         m_indexOfTemplateButton += 1;
-        if (m_templateButton.Count <= m_indexOfTemplateButton)
+        m_soundManager.PlayMusic(audioType);
+        HandleMessage(currentButtonName, message);
+
+        if (m_indexOfTemplateButton >= m_templateButton.Count)
         {
             m_indexOfTemplateButton = 0;
         }
-        if (message.Equals("游戏结束")) m_isGameOver = true;
+
     }
     void HandleMessage(string buttonName, string message)
     {
+        m_bubbleText = m_bubble.GetComponentInChildren<Text>();
         if (m_isWaitingClick)
         {
             switch (buttonName)
@@ -166,7 +163,7 @@ public class View : MonoBehaviour
     private string InsertWrap(string message)
     {
         StringBuilder wrapMessage = new StringBuilder(message);
-        for (int i = mc_charCountInPerLine; i < wrapMessage.Length; i += (mc_charCountInPerLine + 1))
+        for (int i = MAX_CHAR_NUMBER_PER_LINE; i < wrapMessage.Length; i += (MAX_CHAR_NUMBER_PER_LINE + 1))
         {
             wrapMessage.Insert(i, "\n");
         }
@@ -178,7 +175,7 @@ public class View : MonoBehaviour
     {
         if (m_popedChatBubbles.Count < m_templateButton.Count)
         {
-            m_newBubblePosY = mc_firstBubblePosY - m_popedBubblesHeights;
+            m_newBubblePosY = FIRST_BUBBLE_POSY - m_popedBubblesHeights;
             m_popedBubblesHeights += newBubbleHeight;
         }
         // ------------------------------------------------------------ //

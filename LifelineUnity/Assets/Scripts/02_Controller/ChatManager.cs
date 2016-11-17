@@ -1,30 +1,23 @@
-﻿
-using UnityEngine;
-using System.Collections.Generic;
-using System.Collections;
-using SimpleJSON;
+﻿using System;
 using System.IO;
-using System;
-// using DG.Tweening;
+using SimpleJSON;
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 public class ChatManager : MonoBehaviour
 {
     //==============================================================================================
     // Fields
-    private View m_view;
     public Queue<string> m_leftChats = new Queue<string>();
-    private float m_timer = 0.0f;
-    private const float mc_timerDuration = 1.5f;
-    /// <summary> 右侧对话 </summary>
-    private ChatObjectRight rightChat = new ChatObjectRight();
-    /// <summary> 左侧对话 </summary>
-    private ChatObjectLeft leftChat = new ChatObjectLeft();
-
+    private ChatObjectLeft leftChat = new ChatObjectLeft(); // 左侧对话
+    private ChatObjectRight rightChat = new ChatObjectRight();  // 右侧对话
     private JSONNode status = new JSONClass();
     private JSONNode scenes = new JSONClass();
     private JSONNode choices = new JSONClass();
     private string status_savePath;
-    private string currentScene;
-
+    private float m_timer = 0.0f;
+    private bool m_isGameOver = false;
+    private View m_view;
 
     //==============================================================================================
     // Methods
@@ -44,14 +37,13 @@ public class ChatManager : MonoBehaviour
     {
         if (status["atScene"] != null)
         {
-            currentScene = status["atScene"];
-            AtScene(currentScene);     // set: status["atScene"] = null
+            AtScene(status["atScene"]);     // set: status["atScene"] = null
         }
         else
         {
-            if (m_view.m_isGameOver)
+            if (m_isGameOver)
             {
-                m_view.m_isGameOver = false;
+                m_isGameOver = false;
                 StartCoroutine(WaitForRePlayButton(0.3f));
             }
         }
@@ -66,7 +58,7 @@ public class ChatManager : MonoBehaviour
     }
     public void RePlayGame()
     {
-        m_view.m_isGameOver = false;
+        m_isGameOver = false;
         m_view.m_rePlayGameButton.gameObject.SetActive(false);
         m_view.Initialize();
         StartCoroutine(WaitForRePlayGame(0.5f));
@@ -275,7 +267,7 @@ public class ChatManager : MonoBehaviour
             m_view.HideChoicePanel();
             m_timer += Time.deltaTime;
             // 若左侧对话不为空，且计时器时间到，继续下一句.
-            while (m_leftChats.Count > 0 && m_timer >= mc_timerDuration)
+            while (m_leftChats.Count > 0 && m_timer >= 1.5f)
             {
                 // 左侧发送第一句话
                 string leftChat = m_leftChats.Peek();
@@ -283,6 +275,7 @@ public class ChatManager : MonoBehaviour
                 // 删除第一句话
                 m_leftChats.Dequeue();
                 m_timer = 0f;
+                if (leftChat.Equals("游戏结束")) m_isGameOver = true;
             }
         }
         // 左侧没有对话
