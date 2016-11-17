@@ -48,7 +48,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\01_Model\ChatObject.cs" />
+     <Compile Include="Assets\Scripts\01_Model\Chat.cs" />
      <Compile Include="Assets\Scripts\02_Controller\CameraManager.cs" />
      <Compile Include="Assets\Scripts\02_Controller\ChatManager.cs" />
      <Compile Include="Assets\Scripts\02_Controller\SoundManager.cs" />

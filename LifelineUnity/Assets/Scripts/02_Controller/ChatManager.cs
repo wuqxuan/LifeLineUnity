@@ -9,8 +9,6 @@ public class ChatManager : MonoBehaviour
     //==============================================================================================
     // Fields
     public Queue<string> m_leftChats = new Queue<string>();
-    private ChatObjectLeft leftChat = new ChatObjectLeft(); // 左侧对话
-    private ChatObjectRight rightChat = new ChatObjectRight();  // 右侧对话
     private JSONNode status = new JSONClass();
     private JSONNode scenes = new JSONClass();
     private JSONNode choices = new JSONClass();
@@ -47,7 +45,7 @@ public class ChatManager : MonoBehaviour
                 StartCoroutine(WaitForRePlayButton(0.3f));
             }
         }
-        AutoPopLeftChat();
+        PopLeftChat();
     }
 
     public void StartGame()
@@ -195,9 +193,9 @@ public class ChatManager : MonoBehaviour
                 }
             }
             else if (line.StartsWith("<<set")) HandleSet(line);
-            else if (line.StartsWith("[[")) HandleJump(line);
+            else if (line.StartsWith("[[")) ToNewScene(line);
             else if (line.StartsWith("<<category")) HandleChoice(line, scene);
-            else HandleLeftChat(line);
+            else LeftChat(line);
         }
     }
 
@@ -211,7 +209,7 @@ public class ChatManager : MonoBehaviour
         }
         else status[lines[0]] = lines[1];
     }
-    void HandleJump(string line)
+    void ToNewScene(string line)
     {
         string newLine = line.Substring(2, line.Length - 4);
         if (newLine.StartsWith("delay"))
@@ -225,7 +223,7 @@ public class ChatManager : MonoBehaviour
     void HandleChoice(string line, string scene)
     {
         JSONArray choice = choices[int.Parse(line.Substring(19, line.Length - 21))]["actions"].AsArray;
-        rightChat.Choose(m_view, new Dictionary<string, Action<string>> {
+        Chat.Choose(m_view, new Dictionary<string, Action<string>> {
             // choiceButtonOne
             {choice[0]["choice"], message => {
                 ActionFunction(choice, message, 0);
@@ -240,25 +238,25 @@ public class ChatManager : MonoBehaviour
     void ActionFunction(JSONArray choice, string message, int index)
     {
         string newScence = choice[index]["identifier"];
-        rightChat.Say(m_view, message);
+        Chat.RightSay(m_view, message);
         status["atScene"] = newScence;
         SaveStatusData(newScence);
         // SaveStatusData(scene);
     }
 
-    void HandleLeftChat(string line)
+    void LeftChat(string line)
     {
         if (line.Contains("$pills") || line.Contains("$glowrods") || line.Contains("$power"))
         {
             // 替换$pills、$glowrods 和 $power
             string newLine = line.Replace("$pills", status["pills"]).Replace("$glowrods", status["glowrods"]).Replace("$power", status["power"]);
-            leftChat.Say(this, newLine);
+            Chat.LeftSay(this, newLine);
         }
-        else leftChat.Say(this, line);
+        else  Chat.LeftSay(this, line);
     }
 
     /// <summary> 弹出左侧对话 </summary>
-    private void AutoPopLeftChat()
+    private void PopLeftChat()
     {
         // 左侧有对话
         if (m_leftChats.Count > 0)
