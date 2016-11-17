@@ -42,5 +42,5 @@ public class SoundManager : MonoBehaviour
 	// 		m_soundIsActive = true;
 	// 		// m_soundButtonImage.sprite = m_soundButtonImgs[0];
 	// 	}
-	}
+	// }
 }
