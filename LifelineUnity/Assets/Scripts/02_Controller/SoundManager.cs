@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 public class SoundManager : MonoBehaviour
 {
 	//==============================================================================================
@@ -8,8 +7,6 @@ public class SoundManager : MonoBehaviour
     public AudioClip m_leftAudio;	// 左侧发送消息声音
     public AudioClip m_rightAudio;	// 右侧发送消息声音
     private AudioSource m_audioSource;
-	public List<Sprite> m_soundButtonImgs = new List<Sprite>();
-	[SerializeField]
 	// private bool m_soundIsActive = true;
 
     //==============================================================================================

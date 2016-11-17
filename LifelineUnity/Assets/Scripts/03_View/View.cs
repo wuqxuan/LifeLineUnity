@@ -8,29 +8,41 @@ public class View : MonoBehaviour
 {
     //==============================================================================================
     // Fields
-    private ChatManager m_chatManager;
-    public SoundManager m_soundManager;
+    private SoundManager m_soundManager;
+    public SoundManager m_SoundManager
+    {
+        get { return m_soundManager; }
+    }
+
     //======================================
-    public GameObject m_panleScroll;
+
+    public GameObject m_textBoxPanle;
+    public GameObject m_choosePanle;
     public Button m_startGameButton;
     public Button m_rePlayGameButton;
+    public List<Button> m_templateButton = new List<Button>();
+    /// <summary> choices button </summary>
+    public List<Button> m_choiceButtons = new List<Button>();
+
+    //======================================
+
     private Text m_bubbleText;
     /// <summary> 对话气泡 </summary>
     private Button m_bubble;
-    public List<Button> m_templateButton = new List<Button>();
     /// <summary> 已弹出的对话气泡 </summary>
     private List<Button> m_popedChatBubbles = new List<Button>();
-    /// <summary> choices button </summary>
-    public List<Button> m_choiceButtons = new List<Button>();
     /// <summary> 新弹出对话气泡的posY </summary>
     private float m_newBubblePosY;
-
     /// <summary> 由下落转换到向上滚屏状态 </summary>
     private bool m_isFromFallToScrollUp = false;
     private bool m_isWaitingClick = false;
-    /// <summary> 右侧对话是否为空 </summary>
-    public bool m_isRightChatIsNull = true;
-    /// <summary> TemplateText的索引 </summary>
+    /// <summary> 右侧是否有对话 </summary>
+    private bool m_hasRightChat = true;
+    public bool m_HasRightChat
+    {
+        get { return m_hasRightChat; }
+        set { m_hasRightChat = value; }
+    }
     private int m_indexOfTemplateButton;
     /// <summary> 已弹出对话的总高度 </summary>
     private float m_popedBubblesHeights;
@@ -52,14 +64,11 @@ public class View : MonoBehaviour
     void Awake()
     {
         m_soundManager = FindObjectOfType(typeof(SoundManager)) as SoundManager;
-        m_chatManager = FindObjectOfType(typeof(ChatManager)) as ChatManager;
     }
     void Start()
     {
         Initialize();
-        m_panleScroll.SetActive(false);
-        m_startGameButton.onClick.AddListener(() => m_chatManager.StartGame());
-        m_rePlayGameButton.onClick.AddListener(() => m_chatManager.RePlayGame());
+        m_textBoxPanle.SetActive(false);
         m_startGameButton.gameObject.GetComponentInChildren<Text>().text = "开始游戏";
         m_rePlayGameButton.gameObject.GetComponentInChildren<Text>().text = "重新开始游戏";
     }
@@ -87,18 +96,19 @@ public class View : MonoBehaviour
         string currentButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name; // 获得点击的按钮的名字
         m_bubble = m_templateButton[m_indexOfTemplateButton];
         m_bubble.gameObject.SetActive(true);
-        m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, GetNewBubblePosY(BUBBLE_HEIGHT + GAP_BETEEMN_BUBBLE));
-
-        m_popedChatBubbles.Add(m_templateButton[m_indexOfTemplateButton]);
-        m_indexOfTemplateButton += 1;
         m_soundManager.PlayMusic(audioType);
         HandleMessage(currentButtonName, message);
-
+        m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, GetNewBubblePosY(BUBBLE_HEIGHT + GAP_BETEEMN_BUBBLE));
+        UpdateBubble();
+    }
+    void UpdateBubble()
+    {
+        m_popedChatBubbles.Add(m_templateButton[m_indexOfTemplateButton]);
+        m_indexOfTemplateButton += 1;
         if (m_indexOfTemplateButton >= m_templateButton.Count)
         {
             m_indexOfTemplateButton = 0;
         }
-
     }
     void HandleMessage(string buttonName, string message)
     {
@@ -126,20 +136,17 @@ public class View : MonoBehaviour
         m_bubbleText.text = InsertWrap(message);
     }
 
-    /// <summary> 隐藏消息选择面板 </summary>
+    /// <summary> 隐藏选择面板 </summary>
     public void HideChoicePanel()
     {
-        ShowChoicePanel(false);
+        m_choosePanle.SetActive(false);
         m_isWaitingClick = false;
     }
 
-    /// <summary> 显示消息选择面板 </summary>
-    public void ShowChoicePanel(bool isActive)
+    /// <summary> 显示选择面板 </summary>
+    public void ShowChoicePanel()
     {
-        for (int i = 0; i < m_choiceButtons.Count; i++)
-        {
-            m_choiceButtons[i].gameObject.SetActive(isActive);
-        }
+        m_choosePanle.SetActive(true);
         m_isWaitingClick = true;
     }
     /// <summary> 设置选择面板 </summary>
@@ -170,7 +177,7 @@ public class View : MonoBehaviour
         return wrapMessage.ToString();
     }
 
-    /// <summary> 计算新插入对话的Bubble的posY </summary>
+    /// <summary> 计算新插入的Bubble的posY </summary>
     private float GetNewBubblePosY(float newBubbleHeight)
     {
         if (m_popedChatBubbles.Count < m_templateButton.Count)

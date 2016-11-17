@@ -8,12 +8,12 @@ public static class Chat
     public static void RightSay(View view, string message)
     {
         // 弹出新对话
-        view.PopBubble(message, view.m_soundManager.m_rightAudio);
+        view.PopBubble(message, view.m_SoundManager.m_rightAudio);
         // 隐藏选择面板
         view.HideChoicePanel();
-        view.m_isRightChatIsNull = true;
+        view.m_HasRightChat = true;
     }
-      /// <summary> 左侧对话，有等待时间 </summary>
+    /// <summary> 左侧对话，有等待时间 </summary>
     public static void LeftSay(ChatManager cm, string message)
     {
         cm.m_leftChats.Enqueue(message);
@@ -22,7 +22,7 @@ public static class Chat
     {
         if (m_choices.Keys.Count == 2)
         {
-            view.m_isRightChatIsNull = false;
+            view.m_HasRightChat = false;
             view.SetChoice(m_choices);
         }
         else
