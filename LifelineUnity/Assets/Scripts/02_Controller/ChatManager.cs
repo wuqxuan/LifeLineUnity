@@ -271,11 +271,11 @@ public class ChatManager : MonoBehaviour
             {
                 // 左侧发送第一句话
                 string leftChat = m_leftChats.Peek();
+                if (leftChat.Equals("游戏结束")) m_isGameOver = true;
                 m_view.PopBubble(leftChat, m_view.m_soundManager.m_leftAudio);
                 // 删除第一句话
                 m_leftChats.Dequeue();
                 m_timer = 0f;
-                if (leftChat.Equals("游戏结束")) m_isGameOver = true;
             }
         }
         // 左侧没有对话
