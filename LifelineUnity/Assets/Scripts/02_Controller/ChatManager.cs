@@ -236,7 +236,7 @@ public class ChatManager : MonoBehaviour
     void HandleChoice(string line, string scene)
     {
         JSONArray choice = choices[int.Parse(line.Substring(19, line.Length - 21))]["actions"].AsArray;
-        Chat.Choose(m_view, new Dictionary<string, Action<string>> {
+        ChoiceObject.SetChoiceButton(m_view, new Dictionary<string, Action<string>> {
             // choiceButtonOne
             {choice[0]["choice"], message => {
                 ActionFunction(choice, message, 0);
@@ -251,7 +251,7 @@ public class ChatManager : MonoBehaviour
     void ActionFunction(JSONArray choice, string message, int index)
     {
         string newScence = choice[index]["identifier"];
-        Chat.RightSay(m_view, message);
+        ChoiceObject.ReplayMessage(m_view, message);
         status["atScene"] = newScence;
         SaveStatusData(newScence);
         // SaveStatusData(scene);
@@ -263,9 +263,9 @@ public class ChatManager : MonoBehaviour
         {
             // 替换$pills、$glowrods 和 $power
             string newLine = line.Replace("$pills", status["pills"]).Replace("$glowrods", status["glowrods"]).Replace("$power", status["power"]);
-            Chat.LeftSay(this, newLine);
+            m_leftChats.Enqueue(newLine);
         }
-        else Chat.LeftSay(this, line);
+        else m_leftChats.Enqueue(line);
     }
 
     /// <summary> 弹出左侧对话 </summary>

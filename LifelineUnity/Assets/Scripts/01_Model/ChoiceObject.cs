@@ -2,10 +2,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public static class Chat
+public static class ChoiceObject
 {
     /// <summary> 右侧对话，没有等待时间 </summary>
-    public static void RightSay(View view, string message)
+    public static void ReplayMessage(View view, string message)
     {
         // 弹出新对话
         view.PopBubble(message, view.m_SoundManager.m_rightAudio);
@@ -13,12 +13,7 @@ public static class Chat
         view.HideChoicePanel();
         view.m_HasRightChat = true;
     }
-    /// <summary> 左侧对话，有等待时间 </summary>
-    public static void LeftSay(ChatManager cm, string message)
-    {
-        cm.m_leftChats.Enqueue(message);
-    }
-    public static void Choose(View view, Dictionary<string, Action<string>> m_choices)
+    public static void SetChoiceButton(View view, Dictionary<string, Action<string>> m_choices)
     {
         if (m_choices.Keys.Count == 2)
         {
