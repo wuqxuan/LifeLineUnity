@@ -49,9 +49,13 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\01_Model\ChoiceObject.cs" />
+     <Compile Include="Assets\Scripts\02_Controller\AndOrInLine.cs" />
      <Compile Include="Assets\Scripts\02_Controller\CameraManager.cs" />
      <Compile Include="Assets\Scripts\02_Controller\ChatManager.cs" />
+     <Compile Include="Assets\Scripts\02_Controller\ParseText.cs" />
      <Compile Include="Assets\Scripts\02_Controller\SoundManager.cs" />
+     <Compile Include="Assets\Scripts\03_View\BubbleController.cs" />
+     <Compile Include="Assets\Scripts\03_View\ChoicePanel.cs" />
      <Compile Include="Assets\Scripts\03_View\View.cs" />
      <None Include="Assets\Plugins\DOTween\DOTween50.xml" />
      <None Include="Assets\Resources\Data\StoryData_cn.txt" />

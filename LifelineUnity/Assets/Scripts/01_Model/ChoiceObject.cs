@@ -8,9 +8,9 @@ public static class ChoiceObject
     public static void ReplayMessage(View view, string message)
     {
         // 弹出新对话
-        view.PopBubble(message, view.m_SoundManager.m_rightAudio);
+        BubbleController.PopBubble(view, message, view.m_SoundManager.m_rightAudio);
         // 隐藏选择面板
-        view.HideChoicePanel();
+        ChoicePanle.HideChoicePanel(view);
         view.m_HasRightChat = true;
     }
     public static void SetChoiceButton(View view, Dictionary<string, Action<string>> m_choices)
@@ -18,7 +18,7 @@ public static class ChoiceObject
         if (m_choices.Keys.Count == 2)
         {
             view.m_HasRightChat = false;
-            view.SetChoice(m_choices);
+            ChoicePanle.SetChoice(view, m_choices);
         }
         else
         {
