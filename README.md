@@ -30,6 +30,11 @@ python lifeline_on_terminal.py
 - Set Game scene resolution to 9:16     
   
 
-<img src="https://github.com/wuqxuan/LifeLineUnity/raw/master/image/Lifeline.png" width = "300" height = "500" alt="图片名称" align=center />
+<!--<img src="https://github.com/wuqxuan/LifeLineUnity/raw/master/image/Lifeline.png" width = "300" height = "500" alt="图片名称" align=center />  -->
+
+### DownLoad   
+* [Android](https://pan.baidu.com/s/1qYfGLuk)  
+
+![Lifeline.gif](http://upload-images.jianshu.io/upload_images/1653402-f608a7c483a7e8df.gif?imageMogr2/auto-orient/strip)
 
 
