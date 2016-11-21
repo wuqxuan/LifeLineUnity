@@ -61,7 +61,7 @@ public class View : MonoBehaviour
                 bullble.gameObject.SetActive(false);
             }
         }
-        m_textBoxPanle.SetActive(false);
+       m_textBoxPanle.SetActive(false);
         m_rePlayGameButton.gameObject.SetActive(false);
         m_popedChatBubbles.Clear();
         m_newBubblePosY = FIRST_BUBBLE_POSY;

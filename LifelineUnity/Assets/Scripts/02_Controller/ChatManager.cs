@@ -31,7 +31,7 @@ public class ChatManager : MonoBehaviour
         LoadStoryData();
         m_view.m_startGameButton.onClick.AddListener(() => PlayGame());
         m_view.m_rePlayGameButton.onClick.AddListener(() => RePlayGame());
-        status_savePath = Application.persistentDataPath + "/status001.json";
+        status_savePath = Application.persistentDataPath + "/status.json";
     }
 
     void Update()
@@ -60,16 +60,12 @@ public class ChatManager : MonoBehaviour
     public void RePlayGame()
     {
         m_isGameOver = false;
+        m_view.Initialize();
         m_view.m_rePlayGameButton.gameObject.SetActive(false);
         m_view.m_textBoxPanle.SetActive(true);
-        m_view.Initialize();
-        StartCoroutine(RePlayGame(0.5f));
-    }
-    IEnumerator RePlayGame(float duration)
-    {
-        yield return new WaitForSeconds(duration);
         SaveStatusData("Start");
     }
+
     IEnumerator GameOver(float duration)
     {
         yield return new WaitForSeconds(duration);
